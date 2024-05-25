@@ -68,8 +68,12 @@
 ```bin/pulsar-admin --admin-url http://localhost:8081 clusters create cluster-a --broker-url pulsar://broker-main:6650 --url http://broker-main:8080```
 
 
+接下我們要來建立cluster內部資料，下圖為cluster的階層結構
 
-接下來，在這兩個cluster下建立共用namespace
+![image](https://github.com/chadtied/pulsar_simple_geo-replication/assets/96424234/12c6a40b-0095-4e27-ada8-e3b7e8544f92)
+
+
+在這兩個cluster下建立共用namespace
 
 
 ```bin/pulsar-admin --admin-url http://localhost:8080 tenants create edge1 --allowed-clusters cluster-a,cluster-b```
