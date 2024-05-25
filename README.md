@@ -145,12 +145,24 @@
 
 ```sudo docker rm $(sudo docker ps -aq)```
 
+```sudo docker volume prune -f```
+
+```sudo docker network prune -f```
+
+```sudo docker image prune -a -f```
+
+
 **windows:**
 
 ```docker stop $(docker ps -aq)```
 
 ```docker rm $(docker ps -aq)```
 
+```docker volume prune -f```
+
+```docker network prune -f```
+
+```docker image prune -a -f```
 
 
 參考資料&圖源:
