@@ -35,15 +35,15 @@
 
 在當前目錄下建置docker-compose.yaml，並執行
 
-linux
+**linux:**
 
 ```sudo docker-compose up```
 
-windows
+**windows:**
 
 ```docker-compose up```
 
-Mac/ios
+**Mac/ios:**
 
 ```有錢人店店```
 
@@ -135,13 +135,13 @@ Mac/ios
 ## 5. 停用並卸除docker
 
 
-linux:
+**linux:**
 
 ```sudo docker stop $(sudo docker ps -aq)```
 
 ```sudo docker rm $(sudo docker ps -aq)```
 
-windows
+**windows:**
 
 ```docker stop $(docker ps -aq)```
 
