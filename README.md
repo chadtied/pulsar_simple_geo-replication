@@ -42,15 +42,19 @@ Mac/ios
 ## 2. Cluster設置
 
 先透過clusterA向clusterB建立連線
+
 ```bin/pulsar-admin --admin-url http://localhost:8080 cluster create cluster-b --broker-url pulsar://broker-edge1:6650 --url http://broker-edge1:8080```
+
 反之透過clusterB向clusterA建立連線
+
 ```bin/pulsar-admin --admin-url http://localhost:8081 clusters create cluster-a --broker-url pulsar://broker-main:6650 --url http://broker-main:8080```
 
 接下來，在這兩個cluster下建立共用namespace
-```bin/pulsar-admin --admin-url http://localhost:8080 tenants create edge1 --allowed-clusters cluster-a,cluster-b
-bin/pulsar-admin --admin-url http://localhost:8081 tenants create edge1 --allowed-clusters cluster-a,cluster-b
-bin/pulsar-admin --admin-url http://localhost:8080 namespaces create edge1/replicated --clusters cluster-a,cluster-b
-bin/pulsar-admin --admin-url http://localhost:8081 namespaces create edge1/replicated --clusters cluster-a,cluster-b```
+
+```bin/pulsar-admin --admin-url http://localhost:8080 tenants create edge1 --allowed-clusters cluster-a,cluster-b```
+```bin/pulsar-admin --admin-url http://localhost:8081 tenants create edge1 --allowed-clusters cluster-a,cluster-b```
+```bin/pulsar-admin --admin-url http://localhost:8080 namespaces create edge1/replicated --clusters cluster-a,cluster-b```
+```bin/pulsar-admin --admin-url http://localhost:8081 namespaces create edge1/replicated --clusters cluster-a,cluster-b```
 
 
 最後一步，我們要在namespace內建立topic，也就是producer、consumer訂閱，並處理資料的地方
