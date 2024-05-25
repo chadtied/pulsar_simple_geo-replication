@@ -33,7 +33,7 @@
 
 ![image](https://github.com/chadtied/pulsar_simple_geo-replication/assets/96424234/010f888a-8cd6-4552-9690-3033ecf86e8f)
 
-在當前目錄下建置docker-compose.yaml，並執行
+**在當前目錄下建置docker-compose.yaml，並執行**
 
 **linux:**
 
