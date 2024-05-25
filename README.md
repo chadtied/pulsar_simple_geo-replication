@@ -1,6 +1,9 @@
 # 簡易實作pulsar geo-repliction概念
 
 
+[實作開始前，需先下載pulsar](https://pulsar.apache.org/docs/3.2.x/getting-started-home/)
+
+
 
 
 
@@ -144,3 +147,10 @@ windows
 
 ```docker rm $(docker ps -aq)```
 
+
+
+參考資料&圖源:
+
+[https://pulsar.apache.org/](https://pulsar.apache.org/)
+
+[https://github.com/gurghet/pulsar-geo-replication](https://github.com/gurghet/pulsar-geo-replication)
