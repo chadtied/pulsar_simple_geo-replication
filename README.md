@@ -58,14 +58,14 @@
 先透過clusterA向clusterB建立連線
 
 
-```bin/pulsar-admin --admin-url http://localhost:8080 cluster creates cluster-b --broker-url pulsar://broker-edge1:6650 --url http://broker-edge1:8080```
+```bin/pulsar-admin --admin-url http://localhost:8080 clusters create cluster-b --broker-url pulsar://broker-edge1:6650 --url http://broker-edge1:8080```
 
 
 
 反之透過clusterB向clusterA建立連線
 
 
-```bin/pulsar-admin --admin-url http://localhost:8081 clusters creates cluster-a --broker-url pulsar://broker-main:6650 --url http://broker-main:8080```
+```bin/pulsar-admin --admin-url http://localhost:8081 clusters create cluster-a --broker-url pulsar://broker-main:6650 --url http://broker-main:8080```
 
 
 接下我們要來建立cluster內部資料，下圖為cluster的階層結構
