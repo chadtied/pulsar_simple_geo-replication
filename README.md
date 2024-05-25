@@ -69,7 +69,7 @@ Mac/ios
 接下來，在這兩個cluster下建立共用namespace
 
 
-````bin/pulsar-admin --admin-url http://localhost:8080 tenants create edge1 --allowed-clusters cluster-a,cluster-b```
+```bin/pulsar-admin --admin-url http://localhost:8080 tenants create edge1 --allowed-clusters cluster-a,cluster-b```
 
 ```bin/pulsar-admin --admin-url http://localhost:8081 tenants create edge1 --allowed-clusters cluster-a,cluster-b```
 
