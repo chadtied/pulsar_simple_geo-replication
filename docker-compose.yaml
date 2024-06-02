@@ -182,3 +182,93 @@ services:
       - "6651:6650"
       - "8081:8080"
     command: bash -c "bin/apply-config-from-env.py conf/broker.conf && exec bin/pulsar broker"
+
+
+      # Start zookeeper for third cluster
+  zookeeper-edge2:
+    image: apachepulsar/pulsar:latest
+    container_name: zookeeper-edge2
+    restart: on-failure
+    networks:
+      - pulsar-network
+    volumes:
+      - ./data-edge2/zookeeper:/pulsar/data/zookeeper
+    environment:
+      - metadataStoreUrl=zk:zookeeper-edge2:2181
+      - PULSAR_MEM=-Xms256m -Xmx256m -XX:MaxDirectMemorySize=256m
+    command: >
+      bash -c "bin/apply-config-from-env.py conf/zookeeper.conf && \
+             bin/generate-zookeeper-config.sh conf/zookeeper.conf && \
+             exec bin/pulsar zookeeper"
+    healthcheck:
+      test: ["CMD", "bin/pulsar-zookeeper-ruok.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+  # Init third cluster metadata
+  pulsar-init-edge2:
+    container_name: pulsar-init-edge2
+    hostname: pulsar-init-edge2
+    image: apachepulsar/pulsar:latest
+    networks:
+      - pulsar-network
+    command: >
+      bin/pulsar initialize-cluster-metadata \
+               --cluster cluster-c \
+               --zookeeper zookeeper-edge2:2181 \
+               --configuration-store zookeeper-edge2:2181 \
+               --web-service-url http://broker-edge2:8082 \
+               --broker-service-url pulsar://broker-edge2:6652
+    depends_on:
+      zookeeper-edge2:
+        condition: service_healthy
+
+  # Start bookie for third cluster
+  bookie-edge2:
+    image: apachepulsar/pulsar:latest
+    container_name: bookie-edge2
+    restart: on-failure
+    networks:
+      - pulsar-network
+    environment:
+      - clusterName=cluster-c
+      - zkServers=zookeeper-edge2:2181
+      - metadataServiceUri=metadata-store:zk:zookeeper-edge2:2181
+      - BOOKIE_MEM=-Xms512m -Xmx512m -XX:MaxDirectMemorySize=256m
+    depends_on:
+      zookeeper-edge1:
+        condition: service_healthy
+      pulsar-init-edge1:
+        condition: service_completed_successfully
+    # Map the local directory to the container to avoid bookie startup failure due to insufficient container disks.
+    volumes:
+      - ./data-edge2/bookkeeper:/pulsar/data/bookkeeper
+    command: bash -c "bin/apply-config-from-env.py conf/bookkeeper.conf && exec bin/pulsar bookie"
+
+  # Start broker for third cluster
+  broker-edge2:
+    image: apachepulsar/pulsar:latest
+    container_name: broker-edge2
+    hostname: broker-edge2
+    restart: on-failure
+    networks:
+      - pulsar-network
+    environment:
+      - metadataStoreUrl=zk:zookeeper-edge2:2181
+      - zookeeperServers=zookeeper-edge2:2181
+      - clusterName=cluster-c
+      - managedLedgerDefaultEnsembleSize=1
+      - managedLedgerDefaultWriteQuorum=1
+      - managedLedgerDefaultAckQuorum=1
+      - advertisedListeners=internal:pulsar://broker-edge2:6650,external:pulsar://127.0.0.1:6652
+      - PULSAR_MEM=-Xms512m -Xmx512m -XX:MaxDirectMemorySize=256m
+    depends_on:
+      zookeeper-edge1:
+        condition: service_healthy
+      bookie-edge1:
+        condition: service_started
+    ports:
+      - "6652:6650"
+      - "8082:8080"
+    command: bash -c "bin/apply-config-from-env.py conf/broker.conf && exec bin/pulsar broker"
