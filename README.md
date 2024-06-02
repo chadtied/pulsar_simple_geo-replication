@@ -28,7 +28,7 @@
 ## 1. docker建立cluster
 
 
-透過docker建立clusterA、clusterB，還有各cluster的bookie、zookeeper、broker；下圖有三個broker，目前實作只有兩個，分別屬於clusterA、clusterB
+透過docker建立cluster-a、cluster-b、cluster-c、，還有各cluster的bookie、zookeeper、broker；下圖有三個broker，分別屬於實作中的cluster-a、cluster-b、cluster-c
 
 
 ![image](https://github.com/chadtied/pulsar_simple_geo-replication/assets/96424234/010f888a-8cd6-4552-9690-3033ecf86e8f)
@@ -68,21 +68,33 @@
 ```bin/pulsar-admin --admin-url http://localhost:8081 clusters create cluster-a --broker-url pulsar://broker-main:6650 --url http://broker-main:8080```
 
 
+
+依此類推，將各cluster和另外兩個clusters建立連線......
+
+
+
 接下我們要來建立cluster內部資料，下圖為cluster的階層結構
 
 ![image](https://github.com/chadtied/pulsar_simple_geo-replication/assets/96424234/12c6a40b-0095-4e27-ada8-e3b7e8544f92)
 
 
-在這兩個cluster下建立共用namespace
+在這三個cluster下建立共用namespace
 
 
-```bin/pulsar-admin --admin-url http://localhost:8080 tenants create edge1 --allowed-clusters cluster-a,cluster-b```
+```bin/pulsar-admin --admin-url http://localhost:8080 tenants create edge1 --allowed-clusters cluster-a,cluster-b,cluster-c```
 
-```bin/pulsar-admin --admin-url http://localhost:8081 tenants create edge1 --allowed-clusters cluster-a,cluster-b```
+```bin/pulsar-admin --admin-url http://localhost:8081 tenants create edge1 --allowed-clusters cluster-a,cluster-b,cluster-c```
 
-```bin/pulsar-admin --admin-url http://localhost:8080 namespaces create edge1/replicated --clusters cluster-a,cluster-b```
+```bin/pulsar-admin --admin-url http://localhost:8082 tenants create edge1 --allowed-clusters cluster-a,cluster-b,cluster-c```
 
-```bin/pulsar-admin --admin-url http://localhost:8081 namespaces create edge1/replicated --clusters cluster-a,cluster-b```
+```bin/pulsar-admin --admin-url http://localhost:8080 namespaces create edge1/replicated --clusters cluster-a,cluster-b,cluster-c```
+
+```bin/pulsar-admin --admin-url http://localhost:8081 namespaces create edge1/replicated --clusters cluster-a,cluster-b,cluster-c```
+
+```bin/pulsar-admin --admin-url http://localhost:8082 namespaces create edge1/replicated --clusters cluster-a,cluster-b,cluster-c```
+
+
+
 
 
 最後一步，我們要在namespace內建立topic，也就是producer、consumer訂閱，並處理資料的地方
@@ -98,31 +110,37 @@
 我們透過放置監聽器，確定producer、consumer的資料蒐集狀況
 
 
-新開分頁，建立clusterA /edge1/replicated/events的監聽器
+新開分頁，建立cluster-a /edge1/replicated/events的監聽器
 
 
 ```bin/pulsar-client --url http://localhost:8080 --listener-name external consume --subscription-name "sub-a" persistent://edge1/replicated/events -n 0```
 
 
-新開分頁，建立clusterB /edge1/replicated/events的監聽器
+新開分頁，建立cluster-b /edge1/replicated/events的監聽器
 
 
 ```bin/pulsar-client --url http://localhost:8081 --listener-name external consume --subscription-name "sub-b" persistent://edge1/replicated/events -n 0```
 
 
+新開分頁，建立cluster-c /edge1/replicated/events的監聽器
+
+
+```bin/pulsar-client --url http://localhost:8082 --listener-name external consume --subscription-name "sub-b" persistent://edge1/replicated/events -n 0```
+
+
 ## 4. 觀測結果
 
 
-向```clusterA > event``` topic 傳入訊息
+向```cluster-a > event``` topic 傳入訊息
 
 
 ```bin/pulsar-client --url http://localhost:8080 --listener-name external produce persistent://edge1/replicated/events --messages "Winter is so cute" ```
 
 
-會發現clusterA、clusterB的listener都收到了有意義的訊息
+會發現cluster-a、cluster-b、cluster-c的listener都收到了有意義的訊息
 
 
-反之，向```clusterB > event``` topic 傳入訊息
+反之，向```cluster-b > event``` topic 傳入訊息
 
 ```bin/pulsar-client --url http://localhost:8081 --listener-name external produce persistent://edge1/replicated/events --messages "Winter is so cute" ```
 
@@ -133,7 +151,7 @@
 
 ```bin/pulsar-client --url http://localhost:8081 --listener-name external produce --disable-replication persistent://edge1/replicated/events --messages "However IU is the cutest"```
 
-會發覺只有傳入的cluster得到訊息而已，此處是clusterB
+會發覺只有傳入的cluster得到訊息而已，此處是cluster-b
 
 
 ## 5. 停用並卸除docker
