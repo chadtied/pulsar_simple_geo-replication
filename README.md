@@ -55,21 +55,57 @@
 ## 2. Cluster設置
 
 
-先透過clusterA向clusterB建立連線
+### 建立cluster-a和cluster-b相互連線
+
+
+先透過cluster-a向cluster-b建立連線
 
 
 ```bin/pulsar-admin --admin-url http://localhost:8080 clusters create cluster-b --broker-url pulsar://broker-edge1:6650 --url http://broker-edge1:8080```
 
 
 
-反之透過clusterB向clusterA建立連線
+反之透過cluster-b向cluster-a建立連線
 
 
 ```bin/pulsar-admin --admin-url http://localhost:8081 clusters create cluster-a --broker-url pulsar://broker-main:6650 --url http://broker-main:8080```
 
 
+### 建立cluster-a和cluster-c相互連線
 
-依此類推，將各cluster和另外兩個clusters建立連線......
+
+先透過cluster-a向cluster-c建立連線
+
+
+```bin/pulsar-admin --admin-url http://localhost:8080 clusters create cluster-c --broker-url pulsar://broker-edge2:6650 --url http://broker-edge2:8080```
+
+
+
+反之透過cluster-c向cluster-a建立連線
+
+
+```bin/pulsar-admin --admin-url http://localhost:8082 clusters create cluster-a --broker-url pulsar://broker-main:6650 --url http://broker-main:8080```
+
+
+### 建立cluster-b和cluster-c相互連線
+
+
+
+先透過cluster-b向cluster-c建立連線
+
+
+```bin/pulsar-admin --admin-url http://localhost:8081 clusters create cluster-c --broker-url pulsar://broker-edge2:6650 --url http://broker-edge2:8080```
+
+
+
+反之透過cluster-c向cluster-b建立連線
+
+
+```bin/pulsar-admin --admin-url http://localhost:8082 clusters create cluster-b --broker-url pulsar://broker-edge1:6650 --url http://broker-edge1:8080```
+
+
+
+
 
 
 
